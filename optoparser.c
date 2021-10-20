@@ -24,16 +24,21 @@ static struct option const long_options[] = {
   {"flag-p", no_argument, NULL, 'p'},
   {"flag-q", no_argument, NULL, 'q'},
   {"flag-r", no_argument, NULL, 'r'},
+  {"help", no_argument, NULL, 'h'},
+  {"version", no_argument, NULL, 'V'},
   {NULL, 0, NULL, 0}
 };
 
-static inline void emit_try_help (void) {
+static inline void emit_try_help(void) {
   fprintf (stderr, "Try '%s --help' for more information.\n", program_name);
 }
 
-void usage (int status) {
+static inline void version_etc(void) {
+  fprintf (stdout, "--- Version 1.0 ---\n");
+}
+
+void usage(int status) {
     if (status != EXIT_SUCCESS) {
-        // printf("status != EXIT_SUCCESS\n");
         emit_try_help ();
     } else {
         printf ("Usage: %s [OPTION]...\n", program_name);
@@ -41,18 +46,17 @@ void usage (int status) {
         fputs ("\
 Print certain system information.  With no OPTION, same as -s.\n\
 \n\
-  -a, --all                print all information, in the following order,\n\
-                             except omit -p and -i if unknown:\n\
-  -s, --kernel-name        print the kernel name\n\
-  -n, --nodename           print the network node hostname\n\
-  -r, --kernel-release     print the kernel release\n\
-", stdout);
-        fputs ("\
-  -v, --kernel-version     print the kernel version\n\
-  -m, --machine            print the machine hardware name\n\
-  -p, --processor          print the processor type (non-portable)\n\
-  -i, --hardware-platform  print the hardware platform (non-portable)\n\
-  -o, --operating-system   print the operating system\n\
+  -x, --flag-x             print the kernel name\n\
+  -y, --flag-y             print the network node hostname\n\
+  -z, --flag-z             print the kernel release\n\
+  -m, --flag-m             print the kernel version\n\
+  -n, --flag-n             print the machine hardware name\n\
+  -o, --flag-o             print the processor type (non-portable)\n\
+  -p, --flag-p             print the hardware platform (non-portable)\n\
+  -q, --flag-q             print the operating system\n\
+  -r, --flag-r             print the operating system\n\
+  -h, --help               print this help\n\
+  -V, --version            print version and etc\n\
 ", stdout);
 
         // fputs (HELP_OPTION_DESCRIPTION, stdout);
@@ -67,7 +71,7 @@ static int decode_switches(int argc, char** argv) {
     int c;
     unsigned int flags = 0;
 
-    while ((c = getopt_long(argc, argv, "xyzmnopqr", 
+    while ((c = getopt_long(argc, argv, "xyzmnopqrhV", 
                             long_options, NULL)) != -1) {
 
         switch (c) {
@@ -97,6 +101,13 @@ static int decode_switches(int argc, char** argv) {
                 break;
             case 'r':
                 flags |= FLAG_R;
+                break;
+            case 'h':
+                usage(EXIT_SUCCESS);
+                break;
+            case 'V':
+                version_etc();
+                exit(EXIT_SUCCESS);
                 break;
             default:
                 usage(EXIT_FAILURE);
